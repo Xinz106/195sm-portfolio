@@ -124,7 +124,7 @@ export default function App() {
           src="/banner.jpg" 
           alt="Banner" 
           className="w-full h-full object-cover opacity-50"
-          style={{ objectPosition: "center 20%" }}
+          style={{ objectPosition: "center 80%" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent" />
       </motion.div>
