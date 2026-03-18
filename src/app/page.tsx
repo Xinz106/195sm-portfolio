@@ -84,7 +84,7 @@ export default function App() {
       <div className="fixed inset-0 pointer-events-none z-[2] opacity-[0.03] mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
 
       <motion.div className="absolute top-0 left-0 w-full h-[480px] md:h-[600px] z-[0] overflow-hidden bg-black" initial={{ opacity: 0 }} animate={{ opacity: animStage === 2 ? 1 : 0 }} transition={{ duration: 1.5 }}>
-        <img src="/banner.jpg" alt="Banner" className="w-full h-full object-cover opacity-50" style={{ objectPosition: "center 20%" }} />
+        <img src="/banner.jpg" alt="Banner" className="w-full h-full object-cover opacity-50" style={{ objectPosition: "center 80%" }} />
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent" />
       </motion.div>
 
