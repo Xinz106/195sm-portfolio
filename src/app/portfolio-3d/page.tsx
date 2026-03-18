@@ -2,14 +2,45 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// --- 理性的数据管理中心 ---
-const horizontalWorks = [
-  { id: "h1", src: "/3d-works/h1.jpg", title: "无主之夜", desc: "“在钢铁与水泥的折痕里，每一道车灯都是城市未曾言说的秘密。”" },
-  { id: "h2", src: "/3d-works/h2.jpg", title: "寻星启事", desc: "“我们在霓虹的缝隙中寻找走失的猫，却偶然瞥见了整个宇宙的倒影。”" },
-  { id: "h3", src: "/3d-works/h3.jpg", title: "不归之阶", desc: "“跨过这级台阶，你将彻底告别人类的旧梦，坠入赛博空间的深渊。”" },
-  { id: "h4", src: "/3d-works/h4.jpg", title: "暮色微凉", desc: "“白昼与黑夜交替的缝隙里，我站在这里，目睹又一个时代的无声更迭。”" },
-  { id: "h5", src: "/3d-works/h5.jpg", title: "第七回廊", desc: "“被积水吞噬的第七层，只有自动贩卖机的微光，还在执着地等待永远不会出现的旅人。”" },
-];
+// 💡 建立作品集多语言字典：严格对应主页的三种语言标识
+const portfolioTranslations = {
+  zh: {
+    back: "返回",
+    title: "3D 作品集",
+    more: "其它 更多",
+    works: [
+      { id: "h1", src: "/3d-works/h1.jpg", title: "无主之夜", desc: "“在钢铁与水泥的折痕里，每一道车灯都是城市未曾言说的秘密。”" },
+      { id: "h2", src: "/3d-works/h2.jpg", title: "寻星启事", desc: "“我们在霓虹的缝隙中寻找走失的猫，却偶然瞥见了整个宇宙的倒影。”" },
+      { id: "h3", src: "/3d-works/h3.jpg", title: "不归之阶", desc: "“跨过这级台阶，你将彻底告别人类的旧梦，坠入赛博空间的深渊。”" },
+      { id: "h4", src: "/3d-works/h4.jpg", title: "暮色微凉", desc: "“白昼与黑夜交替的缝隙里，我站在这里，目睹又一个时代的无声更迭。”" },
+      { id: "h5", src: "/3d-works/h5.jpg", title: "第七回廊", desc: "“被积水吞噬的第七层，只有自动贩卖机的微光，还在执着地等待永远不会出现的旅人。”" },
+    ]
+  },
+  en: {
+    back: "BACK",
+    title: "3D Portfolio",
+    more: "OTHER WORKS",
+    works: [
+      { id: "h1", src: "/3d-works/h1.jpg", title: "Ownerless Night", desc: "\"In the creases of steel and concrete, every headlight is a secret the city has never told.\"" },
+      { id: "h2", src: "/3d-works/h2.jpg", title: "Star-seeking Notice", desc: "\"Searching for a lost cat in the cracks of neon, we accidentally glimpsed the reflection of the entire universe.\"" },
+      { id: "h3", src: "/3d-works/h3.jpg", title: "Stairway of No Return", desc: "\"Step over this stair, and you will bid farewell to old human dreams, falling into the abyss of cyberspace.\"" },
+      { id: "h4", src: "/3d-works/h4.jpg", title: "Twilight Chill", desc: "\"In the gap between day and night, I stand here, witnessing the silent change of another era.\"" },
+      { id: "h5", src: "/3d-works/h5.jpg", title: "The Seventh Corridor", desc: "\"Engulfed by water on the seventh floor, only the vending machine's faint light still waits for travelers who will never appear.\"" },
+    ]
+  },
+  ja: {
+    back: "戻る",
+    title: "3Dポートフォリオ",
+    more: "その他",
+    works: [
+      { id: "h1", src: "/3d-works/h1.jpg", title: "持ち主のない夜", desc: "「鉄とコンクリートの折り目の中で、ヘッドライトの一筋一筋が、街の語られざる秘密である。」" },
+      { id: "h2", src: "/3d-works/h2.jpg", title: "星探しのお知らせ", desc: "「ネオンの隙間で迷子の子猫を探していたら、偶然にも宇宙全体の倒影を目にした。」" },
+      { id: "h3", src: "/3d-works/h3.jpg", title: "不帰の階段", desc: "「この段を越えれば、人類の古い夢に別れを告げ、サイバー空間の深境へと堕ちていくことになる。」" },
+      { id: "h4", src: "/3d-works/h4.jpg", title: "暮れ方の涼しさ", desc: "「昼と夜が交差する狭間で、私はここに立ち、新たな時代の静かな移ろいを見届ける。」" },
+      { id: "h5", src: "/3d-works/h5.jpg", title: "第七回廊", desc: "「浸水した七階、自販機の微光だけが、決して現れることのない旅人を執拗に待ち続けている。」" },
+    ]
+  }
+};
 
 const verticalWorks = Array.from({ length: 15 }, (_, i) => ({
   id: `v${i + 1}`,
@@ -17,10 +48,22 @@ const verticalWorks = Array.from({ length: 15 }, (_, i) => ({
 }));
 
 export default function Portfolio3D() {
+  const [lang, setLang] = useState<"zh" | "en" | "ja">("en");
+  const t = portfolioTranslations[lang];
+
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   
-  useEffect(() => { setIsLoaded(true); }, []);
+  useEffect(() => { 
+    // 💡 物理同步：初始化时读取主页存下的语言偏好
+    if (typeof window !== "undefined") {
+      const savedLang = localStorage.getItem("user-lang") as "zh" | "en" | "ja";
+      if (savedLang && portfolioTranslations[savedLang]) {
+        setLang(savedLang);
+      }
+    }
+    setIsLoaded(true); 
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -44,20 +87,19 @@ export default function Portfolio3D() {
         animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : -20 }}
         transition={{ duration: 0.8 }}
       >
-        {/* 使用原生的 a 标签强制浏览器加载完整的物理 HTML，彻底告别 CSS 丢失现象 */}
         <a href="/" className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors duration-300">
           <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-          <span className="font-medium tracking-widest text-sm">BACK</span>
+          <span className="font-medium tracking-widest text-sm uppercase">{t.back}</span>
         </a>
         <h1 className="text-xl md:text-2xl font-black text-white tracking-widest drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
-          3D 作品集
+          {t.title}
         </h1>
       </motion.nav>
 
       <div className="max-w-[1400px] mx-auto mt-16 px-6 md:px-12 relative z-10">
         
         <div className="space-y-20 md:space-y-32">
-          {horizontalWorks.map((work, index) => (
+          {t.works.map((work, index) => (
             <motion.div 
               key={work.id}
               className="flex flex-col md:flex-row gap-6 md:gap-12 items-center md:items-start group"
@@ -94,7 +136,7 @@ export default function Portfolio3D() {
            viewport={{ once: true }}
            transition={{ duration: 1 }}
         >
-           <h3 className="text-xl md:text-2xl font-bold text-gray-500 tracking-[0.5em]">其它 更多</h3>
+           <h3 className="text-xl md:text-2xl font-bold text-gray-500 tracking-[0.5em] uppercase">{t.more}</h3>
            <div className="w-px h-16 bg-gradient-to-b from-gray-500 to-transparent" />
         </motion.div>
 
@@ -127,7 +169,7 @@ export default function Portfolio3D() {
             onClick={() => setSelectedImage(null)}
           >
             <div className="absolute top-6 right-6 md:top-10 md:right-10 text-white/50 tracking-widest text-sm pointer-events-none">
-              点击空白或按 ESC 关闭
+              {lang === "zh" ? "点击空白或按 ESC 关闭" : lang === "ja" ? "空白をクリックするか ESC を押して閉じる" : "Click background or press ESC to close"}
             </div>
             <motion.img
               src={selectedImage}
