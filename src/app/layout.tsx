@@ -1,27 +1,34 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "195sm - Profile",
-  description: "AI Programmer & 3D Artist Portfolio",
-};
-
-// 物理锁定：禁止用户缩放，锁定初始比例为 1.0
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  title: "195sm - AI Programmer & 3D Artist",
+  description: "The Portfolio of 195sm",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="zh-CN">
+      <head>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <style>{`
+          :root {
+            color-scheme: dark;
+          }
+          body {
+            background-color: #050505;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+          }
+        `}</style>
+      </head>
+      <body className="antialiased selection:bg-gray-700 selection:text-white bg-[#050505] text-white min-h-screen overflow-x-hidden">
+        {children}
+      </body>
     </html>
   );
 }
